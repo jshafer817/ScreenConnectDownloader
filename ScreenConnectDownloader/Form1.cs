@@ -129,15 +129,17 @@ namespace ScreenConnectDownloader
                 using (var reader = new StreamReader(resp.GetResponseStream()))
                     scriptContent = reader.ReadToEnd();
 
+                var hMatch = Regex.Match(scriptContent, @"""h""\s*:\s*""([^""]+)""");
                 var kMatch = Regex.Match(scriptContent, @"""k""\s*:\s*""([^""]+)""");
                 var pMatch = Regex.Match(scriptContent, @"""p""\s*:\s*(\d+)");
                 if (!kMatch.Success || !pMatch.Success)
                     throw new Exception("Could not extract download parameters.");
+                string hostname = hMatch.Groups[1].Value;
                 string k = kMatch.Groups[1].Value;
                 string port = pMatch.Groups[1].Value;
 
                 // Step 4: Download and launch
-                string zipUrl = host + "/Bin/ScreenConnect.WindowsClient.zip?h=remote.onsitedentalsystems.com&p=" + port + "&k=" + WebUtility.UrlEncode(k) + "&s=" + guid + "&i=Untitled%20Session&e=Support&y=Guest&r=";
+                string zipUrl = host + "/Bin/ScreenConnect.WindowsClient.zip?h="+ hostname + "&p=" + port + "&k=" + WebUtility.UrlEncode(k) + "&s=" + guid + "&i=Untitled%20Session&e=Support&y=Guest&r=";
                 string tempDir = Path.Combine(Path.GetTempPath(), "SCDownload");
                 string zipPath = Path.Combine(tempDir, "client.zip");
 
